@@ -8,7 +8,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.graphframes.GraphFrame;
 
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 import zingg.common.client.ZFrame;
 import zingg.common.client.util.ColName;
 import zingg.common.core.util.GraphUtil;
@@ -31,8 +31,7 @@ public class SparkGraphUtil implements GraphUtil<Dataset<Row>, Row, Column> {
 		cols.add(edges.col(ColName.ID_COL));
 		cols.add(edges.col(ColName.COL_PREFIX + ColName.ID_COL));
 		
-		Dataset<Row> e = edges.select(JavaConverters.asScalaIteratorConverter(
-				cols.iterator()).asScala().toSeq());
+		Dataset<Row> e = edges.select(CollectionConverters.asScala(cols).toSeq());
 		e = e.toDF("src","dst").cache();
 		GraphFrame gf = new GraphFrame(v, e);
 		//gf = gf.dropIsolatedVertices();

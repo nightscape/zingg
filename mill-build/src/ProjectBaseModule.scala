@@ -7,17 +7,23 @@ import mill.scalalib.*
 
 trait ProjectBaseModule extends SbtModule, PublishModule {
 
-  def scalaVersion = "2.12.18"
-  def jvmVersion = "11"
+  def scalaVersion = "2.13.17"
+  def jvmVersion = "17"
 
   def repositories =
     Seq("https://repo1.maven.org/maven2/", "https://repos.spark-packages.org/")
   def mvnDeps = Seq(
     mvn"commons-logging:commons-logging:1.1.1",
     mvn"com.fasterxml.jackson.core:jackson-annotations:2.15.2",
-    mvn"com.fasterxml.jackson.module:jackson-module-scala_2.12:2.15.2"
+    mvn"com.fasterxml.jackson.module:jackson-module-scala_2.13:2.15.2"
   )
-  def javacOptions = Seq("-source", "11", "-target", "11")
+  def javacOptions = Seq("-source", "17", "-target", "17")
+  def scalacOptions = Seq(
+    "-J--add-opens", "-Jjava.base/java.lang=ALL-UNNAMED",
+    "-J--add-opens", "-Jjava.base/java.lang.reflect=ALL-UNNAMED",
+    "-J--add-opens", "-Jjava.base/java.io=ALL-UNNAMED",
+    "-J--add-opens", "-Jjava.base/java.util=ALL-UNNAMED"
+  )
   def pomSettings = Task {
     PomSettings(
       "",
@@ -45,6 +51,21 @@ trait ProjectBaseModule extends SbtModule, PublishModule {
     def bomMvnDeps = super.bomMvnDeps() ++ Seq(mvn"org.junit:junit-bom:5.8.1")
     def testParallelism = true
     def testSandboxWorkingDir = false
+    def forkArgs = Seq(
+      "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+      "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
+      "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+      "--add-opens", "java.base/java.io=ALL-UNNAMED",
+      "--add-opens", "java.base/java.net=ALL-UNNAMED",
+      "--add-opens", "java.base/java.nio=ALL-UNNAMED",
+      "--add-opens", "java.base/java.util=ALL-UNNAMED",
+      "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED",
+      "--add-opens", "java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+      "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+      "--add-opens", "java.base/sun.nio.cs=ALL-UNNAMED",
+      "--add-opens", "java.base/sun.security.action=ALL-UNNAMED",
+      "--add-opens", "java.base/sun.util.calendar=ALL-UNNAMED"
+    )
 
   }
 

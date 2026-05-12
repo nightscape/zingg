@@ -62,13 +62,30 @@
 				<graphframes.version>0.10.0</graphframes.version>
 			</properties>
 		</profile>
+		<profile>
+			<id>spark-4.1</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>spark</name>
+					<value>4.1</value>
+				</property>
+			</activation>
+			<properties>
+				<spark.version>4.1.1</spark.version>
+				<scala.version>2.13.17</scala.version>
+				<spark.binary.version>4.1</spark.binary.version>
+				<scala.binary.version>2.13</scala.binary.version>
+				<graphframes.version>0.11.0</graphframes.version>
+			</properties>
+		</profile>
 	</profiles>
 	<properties>
 		<zingg.version>0.6.0</zingg.version>
 		<skipTests>false</skipTests>
 		<failIfNoTests>false</failIfNoTests>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mcheckstyle.version>2.10</mcheckstyle.version>
 		<mfindbugs.version>2.5.2</mfindbugs.version>
@@ -163,7 +180,7 @@
         </dependency>	
        <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-scala_2.12</artifactId>
+            <artifactId>jackson-module-scala_2.13</artifactId>
             <version>2.15.2</version>
         </dependency>
 																	
