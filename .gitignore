@@ -11,6 +11,7 @@ license/zinggLicense
 client/src/test/resources/large.xlsx
 .idea/**
 **/*.iml
+/out/
 /target/
 /zingg/*
 **/snow.json

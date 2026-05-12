@@ -1,0 +1,6 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.6.0
+mvnDeps: !append
+  - com.fasterxml.jackson.core:jackson-core:2.15.2
+  - com.fasterxml.jackson.core:jackson-databind:2.15.2
+artifactName: zingg-common-infra

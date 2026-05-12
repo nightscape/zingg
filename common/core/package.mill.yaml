@@ -1,0 +1,13 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.6.0
+moduleDeps: [common.client]
+mvnDeps: !append
+  - org.freemarker:freemarker:2.3.31
+  - org.apache.httpcomponents:httpclient:4.5.14
+  - com.fasterxml.jackson.core:jackson-core:2.15.2
+  - com.fasterxml.jackson.core:jackson-databind:2.15.2
+artifactName: zingg-common-core
+unmanagedClasspath:
+  - ../../thirdParty/lib/secondstring.jar
+object test:
+  extends: ProjectBaseTests

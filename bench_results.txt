@@ -1,0 +1,13 @@
+Benchmark Results - Wed May 13 16:09:46 CEST 2026
+
+Mill j1  (serial): 131.672561000s
+Mill j4  (module sharding): 124.270759000s
+Mill j8  (module sharding): 163.946899000s
+Mill j16 (module sharding): 169.952740000s
+Mill j4  (dynamic sharding): 154.134262000s
+Mill j8  (dynamic sharding): 405.120170000s
+Mill j16 (dynamic sharding): 278.285201000s
+Maven T1  (parallel-surefire): 358.889413000s
+Maven T4  (parallel-surefire): 324.501011000s
+Maven T8  (parallel-surefire): 333.537501000s
+Maven T16 (parallel-surefire): 403.264146000s

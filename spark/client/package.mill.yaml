@@ -1,0 +1,44 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.6.0
+moduleDeps: [common.core, common.client]
+mvnDeps: !append
+  - io.graphframes:graphframes-spark3_2.12:0.10.0;exclude=org.slf4j:slf4j-api
+runMvnDeps: !append
+  - com.fasterxml.jackson.core:jackson-core:2.15.2
+  - com.fasterxml.jackson.core:jackson-databind:2.15.2
+  - org.apache.spark:spark-mllib_2.12:3.5.5
+  - org.apache.spark:spark-core_2.12:3.5.5;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+  - org.apache.spark:spark-graphx_2.12:3.5.5
+  - org.scala-lang:scala-library:2.12.10
+compileMvnDeps:
+  - com.fasterxml.jackson.core:jackson-core:2.15.2
+  - com.fasterxml.jackson.core:jackson-databind:2.15.2
+  - org.apache.spark:spark-mllib_2.12:3.5.5
+  - org.apache.spark:spark-core_2.12:3.5.5;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+  - org.apache.spark:spark-graphx_2.12:3.5.5
+  - org.scala-lang:scala-library:2.12.10
+artifactName: zingg-spark-client
+
+object test:
+  extends: ProjectBaseTests
+  moduleDeps: !append [common.client.test]
+  mvnDeps: !append
+    - io.netty:netty-codec-http2:4.1.125.Final
+    - io.netty:netty-handler:4.1.125.Final
+    - io.netty:netty-codec:4.1.125.Final
+    - io.netty:netty-codec-http:4.1.125.Final
+    - org.lz4:lz4-java:1.8.1
+  compileMvnDeps:
+    - com.fasterxml.jackson.core:jackson-core:2.15.2
+    - com.fasterxml.jackson.core:jackson-databind:2.15.2
+    - org.apache.spark:spark-mllib_2.12:3.5.5
+    - org.apache.spark:spark-core_2.12:3.5.5;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+    - org.apache.spark:spark-graphx_2.12:3.5.5
+    - org.scala-lang:scala-library:2.12.10
+  runMvnDeps: !append
+    - com.fasterxml.jackson.core:jackson-core:2.15.2
+    - com.fasterxml.jackson.core:jackson-databind:2.15.2
+    - org.apache.spark:spark-mllib_2.12:3.5.5
+    - org.apache.spark:spark-core_2.12:3.5.5;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+    - org.apache.spark:spark-graphx_2.12:3.5.5
+    - org.scala-lang:scala-library:2.12.10
