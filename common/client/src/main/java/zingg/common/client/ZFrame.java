@@ -144,6 +144,7 @@ public interface ZFrame<D, R, C> {
     public Object getOnlyObjectFromRow(R r);
 
     public void show(boolean a);
+    public void show(int numRows, boolean truncate);
 
     public boolean isEmpty();
     
