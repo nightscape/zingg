@@ -18,6 +18,7 @@ public class ZinggOptions {
     public final static ZinggOption RECOMMEND = new ZinggOption("recommend");
     public final static ZinggOption UPDATE_LABEL = new ZinggOption("updateLabel");
     public final static ZinggOption FIND_AND_LABEL = new ZinggOption("findAndLabel");
+    public final static ZinggOption AI_LABEL = new ZinggOption("aiLabel");
     
 
     public static Map<String, ZinggOption> allZinggOptions;// = new HashMap<String, ZinggOption>();
