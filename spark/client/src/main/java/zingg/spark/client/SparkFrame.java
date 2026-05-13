@@ -10,8 +10,8 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.StructField;
 
-import scala.collection.JavaConverters;
-import scala.collection.Seq;
+import scala.jdk.javaapi.CollectionConverters;
+import scala.collection.immutable.Seq;
 import zingg.common.client.FieldData;
 import zingg.common.client.ZFrame;
 import zingg.common.client.util.ColName;
@@ -52,7 +52,7 @@ public class SparkFrame implements ZFrame<Dataset<Row>, Row, Column> {
 
     
     public ZFrame<Dataset<Row>, Row, Column> select(List<Column> cols){
-        return new SparkFrame(df.select(JavaConverters.asScalaIteratorConverter(cols.iterator()).asScala().toSeq()));
+        return new SparkFrame(df.select(CollectionConverters.asScala(cols).toSeq()));
     }
     
     
@@ -207,12 +207,8 @@ public class SparkFrame implements ZFrame<Dataset<Row>, Row, Column> {
 
     @Override
     public ZFrame<Dataset<Row>, Row, Column> withColumns(String[] columns, Column[] columnValues) {
-        Seq<String> columnsSeq = JavaConverters.asScalaIteratorConverter(Arrays.asList(columns).iterator())
-                .asScala()
-                .toSeq();
-        Seq<Column> columnValuesSeq = JavaConverters.asScalaIteratorConverter(Arrays.asList(columnValues).iterator())
-                .asScala()
-                .toSeq();
+        Seq<String> columnsSeq = CollectionConverters.asScala(Arrays.asList(columns)).toSeq();
+        Seq<Column> columnValuesSeq = CollectionConverters.asScala(Arrays.asList(columnValues)).toSeq();
 
         return new SparkFrame(df.withColumns(columnsSeq, columnValuesSeq));
     }
@@ -225,11 +221,11 @@ public class SparkFrame implements ZFrame<Dataset<Row>, Row, Column> {
         return new SparkFrame(df.repartition(nul, c));
     }
 
-    public ZFrame<Dataset<Row>, Row, Column> repartition(int num,scala.collection.Seq<Column> partitionExprs){
+    public ZFrame<Dataset<Row>, Row, Column> repartition(int num,scala.collection.immutable.Seq<Column> partitionExprs){
          return new SparkFrame(df.repartition(num, partitionExprs));
     }
 
-    public ZFrame<Dataset<Row>, Row, Column> repartition(scala.collection.Seq<Column> partitionExprs){
+    public ZFrame<Dataset<Row>, Row, Column> repartition(scala.collection.immutable.Seq<Column> partitionExprs){
         return new SparkFrame(df.repartition(partitionExprs));
    }
 

@@ -135,8 +135,11 @@ public class TestImageType {
 
 		// call the UDF from select clause of DF
 		df = df.withColumn("cosine", callUDF("testUDFDoubleSeq",df.col("image_embedding"),df.col("image_embedding")));
-		// see if error is reproduced
-		assertThrows(SparkException.class, df::show);
+		df.show();
+		
+		Row r = df.head();
+		Double cos = (Double)r.getAs("cosine");
+		assertEquals(0.1, cos, SMALL_DELTA);
 	}
 
 	@Test

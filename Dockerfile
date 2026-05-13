@@ -1,5 +1,5 @@
 #FROM docker.io/bitnami/spark:3.1.2
-FROM apache/spark:3.5.0-python3
+FROM apache/spark:4.1.1-python3
 USER 0
 RUN apt-get update && \
 	apt install -y curl vim 
@@ -10,7 +10,7 @@ ENV LANG C.UTF-8
 WORKDIR /
 USER root
 WORKDIR /zingg-0.6.0
-RUN curl --location https://github.com/zinggAI/zingg/releases/download/v0.6.0/zingg-0.6.0-spark-3.5.5.tar.gz | \
+RUN curl --location https://github.com/zinggAI/zingg/releases/download/v0.6.0/zingg-0.6.0-spark-4.1.1.tar.gz | \
 tar --extract --gzip --strip=1 
 RUN pip install -r python/requirements.txt
 RUN pip install zingg
