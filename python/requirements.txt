@@ -1,8 +1,0 @@
-pandas
-seaborn
-matplotlib
-sphinx
-sphinx_rtd_theme
-pyspark
-numpy
-

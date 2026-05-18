@@ -15,7 +15,7 @@ trait ProjectBaseModule extends SbtModule, PublishModule {
   def mvnDeps = Seq(
     mvn"commons-logging:commons-logging:1.1.1",
     mvn"com.fasterxml.jackson.core:jackson-annotations:2.15.2",
-    mvn"com.fasterxml.jackson.module:jackson-module-scala_2.12:2.15.2"
+    mvn"com.fasterxml.jackson.module::jackson-module-scala:2.15.2"
   )
   def javacOptions = Seq("-source", "11", "-target", "11")
   def pomSettings = Task {
