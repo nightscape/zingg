@@ -1,0 +1,22 @@
+{
+  "link": false,
+  "fieldDefinition": [
+    { "fieldName": "summary",     "matchType": "fuzzy" },
+    { "fieldName": "description", "matchType": "cve" },
+    { "fieldName": "priority",    "matchType": "exact" }
+  ],
+  "data": [
+    {
+      "name": "tickets",
+      "format": "csv",
+      "props": { "path": "examples/auto/data.csv", "delimiter": ",", "header": true }
+    }
+  ],
+  "output": [
+    {
+      "name": "clusters",
+      "format": "csv",
+      "props": { "path": "/tmp/zpy_auto_out.csv", "delimiter": ",", "header": true }
+    }
+  ]
+}

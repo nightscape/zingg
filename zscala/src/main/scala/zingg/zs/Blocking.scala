@@ -86,6 +86,18 @@ object BlockingTree {
       throw new IllegalArgumentException(s"unknown blocking tree node type '$other'")
   }
 
+  /** One single-field blocker (canopy) per (blockable field, matcher,
+    * cold-start hash). Unlike the learned tree (which picks ONE key per record),
+    * these are unioned as separate canopies — a record can fall in several — so
+    * candidate recall doesn't hinge on a single field or matcher. Empty when no
+    * field is blockable; callers fall back to a single all-pairs block. */
+  def coldStartBlockers(cfg: ZinggConf): Seq[BlockingTree] =
+    cfg.fields.filter(_.blockable).flatMap { f =>
+      f.matchTypes.flatMap(Hash.coldStartHashes).distinct.map { h =>
+        Node(f.name, h, Map.empty, Leaf("seed"))
+      }
+    }
+
   def assignBlocks(df: DataFrame, tree: BlockingTree,
                    blockCol: String = "z_block"): DataFrame = {
     val bTree = df.sparkSession.sparkContext.broadcast(tree)

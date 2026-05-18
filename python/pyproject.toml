@@ -1,2 +1,25 @@
-[tool.ruff]
-line-length = 150
+# uv workspace root for the Python side of Zingg.
+#
+# Two members developed together:
+#   cve_coverage/ — CVE-cluster -> ops-ticket coverage pipeline (the CLI)
+#   zpy/          — zingg-py, the Python port of the Zingg record-linkage core
+#
+# Copy this whole `python/` directory into another repo and it works as-is:
+# `uv sync` resolves both members into one environment; the cve_coverage
+# `--cluster zingg` strategy picks up zingg-py from the workspace (no PyPI).
+[tool.uv.workspace]
+members = ["cve_coverage", "zpy"]
+
+# zingg-py is the sibling workspace member, not a PyPI package.
+[tool.uv.sources]
+zingg-py = { workspace = true }
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+# On Linux, PyPI's default torch wheel bundles the full CUDA runtime (~2-3 GB of
+# nvidia-* packages). The embedder/reranker run fine on CPU at this data size, so
+# pull the CPU-only wheel on Linux; macOS keeps the default wheel (includes MPS).
+# To use a CUDA GPU on Linux, drop the torch source line above.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

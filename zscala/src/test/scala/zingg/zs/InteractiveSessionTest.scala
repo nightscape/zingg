@@ -11,7 +11,7 @@ class InteractiveSessionTest extends SharedSpark {
   private val cfg = ZinggConf(
     fields = Seq(
       FieldDef("summary",     MatchType.Text),
-      FieldDef("description", MatchType.CveId),
+      FieldDef("description", MatchType.cve),
       FieldDef("priority",    MatchType.Exact)
     ),
     blockSize = 50,

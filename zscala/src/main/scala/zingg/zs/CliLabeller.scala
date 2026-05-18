@@ -37,9 +37,15 @@ final class CliLabeller(
     spark.createDataFrame(spark.sparkContext.parallelize(outRows.toSeq, 2), schema)
   }
 
-  private def askOne(r: Row, idx: Int, total: Int, cfg: ZinggConf): CliLabeller.Answer = {
+  private def askOne(r: Row, idx: Int, total: Int, cfg: ZinggConf): CliLabeller.Answer =
+    ask(r, cfg, s"━━━ Pair ${idx + 1} / $total ━━━")
+
+  /** Render one pair under `header` and read a single answer from stdin. Used by
+    * the online ([[InteractiveSession]]-driven) labelling loop, where the total
+    * pair count isn't known up front. */
+  def ask(r: Row, cfg: ZinggConf, header: String): CliLabeller.Answer = {
     out.println()
-    out.println(s"━━━ Pair ${idx + 1} / $total ━━━")
+    out.println(header)
     PairTable.render(cfg, r, width).foreach(out.println)
     out.print("Match? [y]es / [n]o / [s]kip / [q]uit: ")
     out.flush()

@@ -36,6 +36,28 @@ object PairBuilder {
     } else joined
   }
 
+  /** Cold-start candidate pairs: the union of [[selfPairs]] over every
+    * [[BlockingTree.coldStartBlockers]] canopy, deduplicated by id pair.
+    *
+    * This is the multi-key (canopy) blocking used before a tree is learned. A
+    * pair surfaces if the two records share a key under *any* blocker, so a true
+    * match is proposed as long as one high-recall signal agrees — e.g. a shared
+    * CVE id — even when an incidental field like assignee differs. Falls back to
+    * a single all-pairs block when the config has no blockable field. */
+  def coldStartPairs(df: DataFrame, cfg: ZinggConf,
+                     crossSourceOnly: Boolean = false): DataFrame = {
+    val blockers = BlockingTree.coldStartBlockers(cfg) match {
+      case Seq() => Seq(BlockingTree.Leaf("root"))
+      case bs    => bs
+    }
+    val perBlocker = blockers.map { b =>
+      selfPairs(BlockingTree.assignBlocks(df, b), cfg, crossSourceOnly = crossSourceOnly)
+    }
+    val lId = s"${ZinggConf.LeftPrefix}${cfg.idCol}"
+    val rId = s"${ZinggConf.RightPrefix}${cfg.idCol}"
+    perBlocker.reduce(_ unionByName _).dropDuplicates(lId, rId)
+  }
+
   private def prefix(df: DataFrame, p: String): DataFrame =
     df.columns.foldLeft(df) { (acc, c) => acc.withColumnRenamed(c, s"$p$c") }
 }

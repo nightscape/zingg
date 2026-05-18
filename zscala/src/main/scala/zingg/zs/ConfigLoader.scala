@@ -7,7 +7,11 @@ import scala.jdk.CollectionConverters._
 /** Reader for the Zingg JSON config.
   *
   * Recognises:
-  *   fieldDefinition[] : { fieldName, matchType }   – the global logical schema
+  *   fieldDefinition[] : { fieldName, matchType, blocking? } – the logical schema
+  *                       `matchType` is a string, an object `{ type, pattern }`
+  *                       (e.g. `{ "type": "regex", "pattern": "ISSUE-\\d+" }`), or
+  *                       an array of either to apply several matchers to one column.
+  *                       `blocking: false` ⇒ scoring feature only, never a block key.
   *   data[]            : { name, format, props.path, props.header,
   *                         fieldMapping, fieldNormalizers }
   *   output[]          : { format, props.path }
@@ -27,7 +31,8 @@ object ConfigLoader {
       header: Boolean,
       name: String = "",
       mapping: Map[String, String] = Map.empty,
-      normalizers: Map[String, String] = Map.empty
+      normalizers: Map[String, String] = Map.empty,
+      options: Map[String, String] = Map.empty
   )
 
   final case class Loaded(cfg: ZinggConf, inputs: Seq[IO], outputs: Seq[IO], link: Boolean)
@@ -52,19 +57,45 @@ object ConfigLoader {
 
   private def parseField(n: JsonNode): Option[FieldDef] = {
     val name = n.path("fieldName").asText("")
-    val mt   = n.path("matchType").asText("").toLowerCase
-    if (name.isEmpty || mt == "dont_use" || mt == "do_not_use") None
-    else Some(FieldDef(name, matchTypeOf(mt)))
+    // `"blocking": false` keeps a field as a scoring feature but bars it from
+    // being used as a block key — for incidental fields (e.g. assignee) that
+    // otherwise dominate candidate generation. Defaults to true.
+    val blockable  = n.path("blocking").asBoolean(true)
+    val matchTypes = parseMatchTypes(n.path("matchType"))
+    if (name.isEmpty || matchTypes.isEmpty) None
+    else Some(FieldDef(name, matchTypes, blockable))
   }
 
-  private def matchTypeOf(s: String): MatchType = s match {
-    case "exact"                       => MatchType.Exact
-    case "fuzzy" | "text"              => MatchType.Fuzzy
-    case "numeric" | "number" | "int"  => MatchType.Numeric
-    case "email"                       => MatchType.Email
-    case "text_long" | "long_text"     => MatchType.Text
-    case "cve" | "cve_id" | "cveid"    => MatchType.CveId
-    case _                             => MatchType.Custom
+  /** `matchType` may be a single string, a single object, or an array mixing
+    * both — yielding one or more matchers for the field. `dont_use` entries are
+    * dropped; a field left with no matcher is excluded entirely. */
+  private def parseMatchTypes(n: JsonNode): Seq[MatchType] = {
+    val elems = if (n.isArray) n.elements().asScala.toSeq else Seq(n)
+    elems.flatMap(parseMatcher)
+  }
+
+  /** One matcher. Object form: `{ "type": "regex", "pattern": "<regex>" }`
+    * (any `type` that names a built-in match type is also accepted). */
+  private def parseMatcher(n: JsonNode): Option[MatchType] =
+    if (n.isObject) n.path("type").asText("").toLowerCase match {
+      case "regex" =>
+        val p = n.path("pattern").asText("")
+        require(p.nonEmpty, "a \"regex\" matchType requires a non-empty \"pattern\"")
+        Some(MatchType.Regex(p))
+      case other => matchTypeOf(other)
+    }
+    else if (n.isTextual) matchTypeOf(n.asText("").toLowerCase)
+    else None
+
+  private def matchTypeOf(s: String): Option[MatchType] = s match {
+    case "" | "dont_use" | "do_not_use" => None
+    case "exact"                        => Some(MatchType.Exact)
+    case "fuzzy" | "text"               => Some(MatchType.Fuzzy)
+    case "numeric" | "number" | "int"   => Some(MatchType.Numeric)
+    case "email"                        => Some(MatchType.Email)
+    case "text_long" | "long_text"      => Some(MatchType.Text)
+    case "cve" | "cve_id" | "cveid"     => Some(MatchType.cve)
+    case _                              => Some(MatchType.Custom)
   }
 
   private def parseInput(n: JsonNode, idx: Int): IO = {
@@ -86,8 +117,20 @@ object ConfigLoader {
     val path   = props.path("path").asText("")
     val header = props.path("header").asBoolean(false)
     require(path.nonEmpty, "data/output entry missing props.path")
-    IO(format, os.Path(path, os.pwd), header)
+    IO(format, os.Path(path, os.pwd), header, options = readerOptions(props))
   }
+
+  /** Every `props` entry except `path`/`header` (handled separately) is passed
+    * straight through to the Spark reader/writer as an option. This is what
+    * carries `delimiter`, `multiLine`, `quote`, `escape`, … from the config —
+    * without it a multi-line quoted CSV is shredded into mostly-empty fragment
+    * rows that then surface as half-empty pairs in the labeller. */
+  private def readerOptions(props: JsonNode): Map[String, String] =
+    if (!props.isObject) Map.empty
+    else props.fields().asScala
+      .filterNot(e => e.getKey == "path" || e.getKey == "header")
+      .map(e => e.getKey -> e.getValue.asText(""))
+      .toMap
 
   private def strMap(n: JsonNode): Map[String, String] =
     if (!n.isObject) Map.empty

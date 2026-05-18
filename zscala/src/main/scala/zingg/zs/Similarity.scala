@@ -57,28 +57,31 @@ object Similarity {
   }
 
   def features(mt: MatchType, a: Any, b: Any): Array[Double] = mt match {
-    case MatchType.Exact   => Array(exact(s(a), s(b)))
-    case MatchType.Fuzzy   => Array(jaroWinkler(s(a), s(b)),
-                                    normalizedLevenshtein(s(a), s(b)),
-                                    jaccard(s(a), s(b)))
-    case MatchType.Numeric => Array(numericClose(a, b))
-    case MatchType.Email   => Array(exact(s(a), s(b)), jaroWinkler(s(a), s(b)))
-    case MatchType.Text    => Array(bigramJaccard(s(a), s(b)), jaccard(s(a), s(b)))
-    case MatchType.CveId   => Array(exact(extractCve(s(a)), extractCve(s(b))))
-    case MatchType.Custom  => Array(exact(s(a), s(b)))
+    case MatchType.Exact     => Array(exact(s(a), s(b)))
+    case MatchType.Fuzzy     => Array(jaroWinkler(s(a), s(b)),
+                                      normalizedLevenshtein(s(a), s(b)),
+                                      jaccard(s(a), s(b)))
+    case MatchType.Numeric   => Array(numericClose(a, b))
+    case MatchType.Email     => Array(exact(s(a), s(b)), jaroWinkler(s(a), s(b)))
+    case MatchType.Text      => Array(bigramJaccard(s(a), s(b)), jaccard(s(a), s(b)))
+    case MatchType.Regex(p)  => val ex = extractor(p); Array(exact(ex(a), ex(b)))
+    case MatchType.Custom    => Array(exact(s(a), s(b)))
   }
 
   def featureWidth(mt: MatchType): Int = mt match {
     case MatchType.Exact | MatchType.Numeric |
-         MatchType.CveId | MatchType.Custom => 1
-    case MatchType.Email | MatchType.Text   => 2
-    case MatchType.Fuzzy                    => 3
+         _: MatchType.Regex | MatchType.Custom => 1
+    case MatchType.Email | MatchType.Text      => 2
+    case MatchType.Fuzzy                       => 3
   }
 
   private def s(a: Any): String = if (a == null) null else a.toString
 
-  private val cveRe = "(?i)CVE-\\d{4}-\\d{4,7}".r
-
-  def extractCve(s: String): String =
-    if (s == null) null else cveRe.findFirstIn(s).map(_.toUpperCase).orNull
+  /** Cached regex extractor per pattern. Reuses the blocking [[Hash.RegexExtract]]
+    * so the token a `Regex` matcher compares is exactly the token the blocking
+    * canopy keys on — and the pattern is compiled once, not per row. */
+  private val extractors =
+    new java.util.concurrent.ConcurrentHashMap[String, Hash.RegexExtract]
+  private def extractor(pattern: String): Hash.RegexExtract =
+    extractors.computeIfAbsent(pattern, (p: String) => Hash.RegexExtract(p))
 }

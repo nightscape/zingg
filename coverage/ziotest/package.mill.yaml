@@ -1,0 +1,14 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.1.0
+artifactName: coverage-ziotest
+scalaVersion: 2.13.17
+jvmVersion: "17"
+moduleDeps: [coverage.core]
+# Only zio-test; the base module's deps (jackson, commons-logging) aren't needed here.
+mvnDeps:
+  - dev.zio:zio-test_2.13:2.1.19
+object test:
+  extends: SbtTests
+  testFramework: zio.test.sbt.ZTestFramework
+  mvnDeps:
+    - dev.zio:zio-test-sbt_2.13:2.1.19

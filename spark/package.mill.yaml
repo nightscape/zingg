@@ -1,3 +1,0 @@
-extends: PublishModule
-publishVersion: 0.6.0
-repositories: ["https://repo1.maven.org/maven2/", "https://repos.spark-packages.org/"]

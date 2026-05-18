@@ -1,0 +1,87 @@
+{
+    "link": true,
+
+    "fieldDefinition": [
+        { "fieldName": "issue_key",            "matchType": "dont_use" },
+
+        { "fieldName": "assignee",             "matchType": "fuzzy", "blocking": false },
+
+        { "fieldName": "vulnerability_title",
+          "matchType": [ "fuzzy", { "type": "regex", "pattern": "(?i)CVE-\\d{4}-\\d{4,7}" } ] },
+
+        { "fieldName": "vuln_code",
+          "matchType": [ "fuzzy", { "type": "regex", "pattern": "(?i)CVE-\\d{4}-\\d{4,7}" } ] },
+
+        { "fieldName": "cms_product_name",     "matchType": "fuzzy" },
+
+        { "fieldName": "asset_name",           "matchType": "fuzzy" },
+
+        { "fieldName": "misconfiguration_desc",
+          "matchType": [ "text_long", { "type": "regex", "pattern": "(?i)CVE-\\d{4}-\\d{4,7}" } ] },
+
+        { "fieldName": "service_port",         "matchType": "dont_use" }
+    ],
+
+    "data": [
+        {
+            "name": "statistix",
+            "format": "csv",
+            "props": {
+                "path": "StatAnon.csv",
+                "delimiter": ",",
+                "header": true,
+                "multiLine": "true"
+            },
+            "fieldMapping": {
+                "issue_key":             "Issue key",
+                "assignee":              "Assignee",
+                "vulnerability_title":   "Custom field (Vulnerability Title)",
+                "vuln_code":             "Summary",
+                "cms_product_name":      "Custom field (CMS Product Name)",
+                "asset_name":            "Custom field (Asset Names)",
+                "misconfiguration_desc": "Custom field (Misconfiguration Description)",
+                "service_port":          "Custom field (Service Port)"
+            }
+        },
+        {
+            "name": "jira",
+            "format": "csv",
+            "props": {
+                "path": "VmtAnon.csv",
+                "delimiter": ",",
+                "header": true,
+                "multiLine": "true"
+            },
+            "fieldMapping": {
+                "issue_key":             "Issue key",
+                "assignee":              "Assignee",
+                "vulnerability_title":   "Summary",
+                "vuln_code":             "Summary",
+                "cms_product_name":      "Description",
+                "asset_name":            "Description",
+                "misconfiguration_desc": "Description"
+            }
+        }
+    ],
+
+    "output": [{
+        "name": "output",
+        "format": "csv",
+        "props": {
+            "path": "/tmp/zinggSecurityOutput",
+            "delimiter": ",",
+            "header": true
+        }
+    }],
+
+    "pipeline": [
+        { "id": "clusters", "step": "cluster", "input": "statistix", "strategy": "deterministic" },
+        { "id": "coverage", "step": "link", "clusters": ["clusters"], "against": "jira",
+          "topn": 50, "topk": 5 }
+    ],
+
+    "labelDataSampleSize": 0.5,
+    "numPartitions": 4,
+    "modelId": 200,
+    "zinggDir": "models"
+}

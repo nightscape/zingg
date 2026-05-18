@@ -1,0 +1,9 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.1.0
+artifactName: coverage-core
+scalaVersion: 2.13.17
+jvmVersion: "17"
+# The statistical core depends on nothing. Override the base deps to keep it that way.
+mvnDeps: []
+object test:
+  extends: ProjectBaseTests

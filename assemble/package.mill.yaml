@@ -1,9 +1,0 @@
-extends:
-  - millbuild.ProjectBaseModule
-  - millbuild.SparkAssemblyModule
-publishVersion: 0.6.0
-moduleDeps: [common.core, common.client, spark.core, spark.client]
-mvnDeps: !append
-  - com.fasterxml.jackson.core:jackson-core:2.15.2
-  - com.fasterxml.jackson.core:jackson-databind:2.15.2
-artifactName: zingg

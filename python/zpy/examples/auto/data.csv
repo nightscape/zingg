@@ -1,0 +1,7 @@
+z_id,summary,description,priority
+0,rce in nginx,scanner found issue ref CVE-2021-00001,P1
+1,remote code execution nginx,affects nginx ref CVE-2021-00001,P1
+2,sql injection redis,audit finding ref CVE-2020-22222,P1
+3,sqli in redis db,redis issue ref CVE-2020-22222,P1
+4,path traversal kafka,internal scan ref CVE-2019-33333,P1
+5,directory traversal kafka,kafka ref CVE-2019-33333,P1

@@ -11,7 +11,7 @@ import org.apache.spark.storage.StorageLevel
   * {{{
   *   val cfg = ZinggConf(fields = Seq(
   *     FieldDef("summary", MatchType.Text),
-  *     FieldDef("description", MatchType.CveId),
+  *     FieldDef("description", MatchType.cve),
   *     FieldDef("priority", MatchType.Exact)
   *   ))
   *   val z = new Zingg(cfg)
@@ -30,9 +30,14 @@ class Zingg(cfg: ZinggConf, link: Boolean = false) extends Serializable {
       n: Int = 30
   ): DataFrame = {
     val withIds = ensureId(df)
-    val tree = priorTree.getOrElse(seedTree)
-    val blocked = BlockingTree.assignBlocks(withIds, tree)
-    val pairs = PairBuilder.selfPairs(blocked, cfg, crossSourceOnly = link)
+    // With a learned tree, use its single high-precision key; before any labels
+    // exist, fan out over multiple cold-start canopies for recall.
+    val pairs = priorTree match {
+      case Some(tree) =>
+        PairBuilder.selfPairs(BlockingTree.assignBlocks(withIds, tree), cfg, crossSourceOnly = link)
+      case None =>
+        PairBuilder.coldStartPairs(withIds, cfg, crossSourceOnly = link)
+    }
     val featured = Features.addFeatures(pairs, cfg)
     val sampled = priorModel match {
       case Some(m) =>
@@ -71,9 +76,7 @@ class Zingg(cfg: ZinggConf, link: Boolean = false) extends Serializable {
       priorPrecision: Double = 1.0
   ): InteractiveSession = {
     val withIds  = ensureId(df)
-    val tree     = seedTree
-    val blocked  = BlockingTree.assignBlocks(withIds, tree)
-    val pairs    = PairBuilder.selfPairs(blocked, cfg, crossSourceOnly = link)
+    val pairs    = PairBuilder.coldStartPairs(withIds, cfg, crossSourceOnly = link)
     val featured = Features.addFeatures(pairs, cfg).persist(StorageLevel.MEMORY_AND_DISK)
     val poly = new PolynomialExpansion()
       .setInputCol(Features.FeatureCol)
@@ -115,7 +118,7 @@ class Zingg(cfg: ZinggConf, link: Boolean = false) extends Serializable {
     cfg.fields.find(_.blockable) match {
       case None => BlockingTree.Leaf("root")
       case Some(f) =>
-        val h = Hash.registry.find(_.applicableTo.contains(f.matchType))
+        val h = f.matchTypes.flatMap(Hash.coldStartHashes).headOption
                     .getOrElse(Hash.IdentityString)
         BlockingTree.Node(f.name, h, Map.empty, BlockingTree.Leaf("seed"))
     }
