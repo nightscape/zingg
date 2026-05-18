@@ -1,0 +1,22 @@
+extends:
+  - millbuild.ProjectBaseModule
+  - AssemblyModule
+publishVersion: 0.6.0
+artifactName: zingg-zscala-app
+scalaVersion: 2.13.17
+jvmVersion: "17"
+moduleDeps: [zscala]
+mvnDeps: !append
+  - com.lihaoyi:mainargs_2.13:0.7.6
+  - org.apache.spark:spark-mllib_2.13:4.1.1
+  - org.apache.spark:spark-sql_2.13:4.1.1
+  - org.apache.spark:spark-core_2.13:4.1.1;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+  - org.apache.spark:spark-graphx_2.13:4.1.1
+  - org.scala-lang:scala-library:2.13.17
+  - io.netty:netty-codec-http2:4.1.125.Final
+  - io.netty:netty-handler:4.1.125.Final
+  - io.netty:netty-codec:4.1.125.Final
+  - io.netty:netty-codec-http:4.1.125.Final
+  - org.lz4:lz4-java:1.8.1
+mainClass: zingg.zs.Main
+prependShellScript: ""

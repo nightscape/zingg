@@ -1,0 +1,56 @@
+extends: millbuild.ProjectBaseModule
+publishVersion: 0.6.0
+artifactName: zingg-zscala
+scalaVersion: 2.13.17
+jvmVersion: "17"
+mvnDeps:
+  - commons-logging:commons-logging:1.1.1
+  - com.fasterxml.jackson.core:jackson-annotations:2.15.2
+  - com.fasterxml.jackson.module:jackson-module-scala_2.13:2.15.2
+  - io.graphframes:graphframes-spark4_2.13:0.11.0;exclude=org.slf4j:slf4j-api
+  - org.apache.commons:commons-text:1.10.0
+  - com.lihaoyi:os-lib_2.13:0.11.3
+compileMvnDeps:
+  - org.apache.spark:spark-mllib_2.13:4.1.1
+  - org.apache.spark:spark-sql_2.13:4.1.1
+  - org.apache.spark:spark-core_2.13:4.1.1;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+  - org.apache.spark:spark-graphx_2.13:4.1.1
+  - org.scala-lang:scala-library:2.13.17
+
+object test:
+  extends: ProjectBaseTests
+  testSandboxWorkingDir: true
+  forkArgs:
+    - "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    - "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
+    - "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+    - "--add-opens=java.base/java.io=ALL-UNNAMED"
+    - "--add-opens=java.base/java.net=ALL-UNNAMED"
+    - "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    - "--add-opens=java.base/java.util=ALL-UNNAMED"
+    - "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED"
+    - "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED"
+    - "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    - "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED"
+    - "--add-opens=java.base/sun.security.action=ALL-UNNAMED"
+    - "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED"
+  mvnDeps: !append
+    - io.netty:netty-codec-http2:4.1.125.Final
+    - io.netty:netty-handler:4.1.125.Final
+    - io.netty:netty-codec:4.1.125.Final
+    - io.netty:netty-codec-http:4.1.125.Final
+    - org.lz4:lz4-java:1.8.1
+    - org.scalacheck:scalacheck_2.13:1.18.0
+    - com.holdenkarau:spark-testing-base_2.13:4.0.0-preview2_2.0.1;exclude=org.apache.spark:spark-core_2.13;exclude=org.apache.spark:spark-sql_2.13;exclude=org.apache.spark:spark-mllib_2.13;exclude=org.apache.spark:spark-streaming_2.13;exclude=org.apache.spark:spark-hive_2.13;exclude=org.apache.spark:spark-catalyst_2.13;exclude=org.scalatest:scalatest_2.13
+  compileMvnDeps:
+    - org.apache.spark:spark-mllib_2.13:4.1.1
+    - org.apache.spark:spark-sql_2.13:4.1.1
+    - org.apache.spark:spark-core_2.13:4.1.1;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+    - org.apache.spark:spark-graphx_2.13:4.1.1
+    - org.scala-lang:scala-library:2.13.17
+  runMvnDeps: !append
+    - org.apache.spark:spark-mllib_2.13:4.1.1
+    - org.apache.spark:spark-sql_2.13:4.1.1
+    - org.apache.spark:spark-core_2.13:4.1.1;exclude=at.yawk.lz4:lz4-java;exclude=org.apache.zookeeper:zookeeper;exclude=io.netty:netty-codec-http2;exclude=io.netty:netty-handler;exclude=io.netty:netty-codec;exclude=io.netty:netty-codec-http;exclude=com.google.guava:guava;exclude=org.apache.ivy:ivy;exclude=com.google.protobuf:protobuf-java;exclude=org.apache.commons:commons-compress;exclude=org.apache.commons:commons-lang3;exclude=org.lz4:lz4-java
+    - org.apache.spark:spark-graphx_2.13:4.1.1
+    - org.scala-lang:scala-library:2.13.17
