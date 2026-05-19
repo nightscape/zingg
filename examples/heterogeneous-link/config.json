@@ -1,0 +1,42 @@
+{
+  "link": true,
+
+  "fieldDefinition": [
+    { "fieldName": "name",  "matchType": "fuzzy" },
+    { "fieldName": "email", "matchType": "email" },
+    { "fieldName": "phone", "matchType": "fuzzy" },
+    { "fieldName": "city",  "matchType": "fuzzy" }
+  ],
+
+  "data": [
+    {
+      "name": "crm",
+      "format": "csv",
+      "props": { "path": "examples/heterogeneous-link/crm.csv", "header": true },
+      "fieldMapping":     { "name": "full_name", "email": "email_address", "phone": "phone",        "city": "city" },
+      "fieldNormalizers": { "email": "lower", "phone": "digits" }
+    },
+    {
+      "name": "billing",
+      "format": "csv",
+      "props": { "path": "examples/heterogeneous-link/billing.csv", "header": true },
+      "fieldMapping":     { "name": "customer_name", "email": "mail", "phone": "telephone", "city": "town" },
+      "fieldNormalizers": { "email": "lower", "phone": "digits" }
+    },
+    {
+      "name": "support",
+      "format": "csv",
+      "props": { "path": "examples/heterogeneous-link/support.csv", "header": true },
+      "fieldMapping":     { "name": "contact", "email": "email", "phone": "phone_number", "city": "location" },
+      "fieldNormalizers": { "email": "lower", "phone": "digits" }
+    }
+  ],
+
+  "output": [
+    {
+      "name": "output",
+      "format": "csv",
+      "props": { "path": "/tmp/zinggHeterogeneousLink", "header": true }
+    }
+  ]
+}
